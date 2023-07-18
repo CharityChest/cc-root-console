@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  app-develop:
+    image: cc-root-console/headless
+    build:
+      context: ../..
+      dockerfile: ./docker/headless/Dockerfile
+      args:
+        - NODE_VERSION=${CC_ROOT_CONSOLE_NODE_VERSION}
+        - ALPINE_VERSION=${CC_ROOT_CONSOLE_ALPINE_VERSION}
+    volumes:
+      - ../..:/code
+    ports:
+      - "3000:3000"
