@@ -8,7 +8,7 @@ import { fetchWrapper } from '@/helper/fetch-wrapper';
 import { alertService } from '@/service/alert.service';
 
 const userSubject = new BehaviorSubject<StoredUser|undefined>(
-    typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user') || '{}')
+    typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user'))
 );
 
 export type StoredUser = {

@@ -1,8 +1,9 @@
+'use client'
+
 import React from 'react';
+import {Layout} from '@/component/account';
 
-import Layout from '@/component/layout';
-
-const Welcome : React.FC = () => {
+const Welcome: React.FC = () => {
     return (
         <Layout>
             <div>

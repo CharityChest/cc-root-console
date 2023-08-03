@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { userService } from '@/service/user.service';
+import {authRoutes} from "@/route/local";
 
 export { Layout };
 
@@ -12,7 +13,7 @@ const Layout: React.FC<{ children: React.ReactNode}> = function Layout({ childre
     useEffect(() => {
         // redirect to home if already logged in
         if (userService.userValue) {
-            router.push('/');
+            router.push(authRoutes.root);
         }
     }, [router]);
 

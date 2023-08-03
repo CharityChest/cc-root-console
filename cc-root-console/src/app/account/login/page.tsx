@@ -31,8 +31,7 @@ const Login : React.FC<{}> = () => {
         alertService.clear();
         return userService.login(username, password)
             .then(() => {
-                // get return url from query parameters or default to '/'
-                const returnUrl : string = getQueryParams('returnUrl','/');
+                const returnUrl : string = getQueryParams('returnUrl',authRoutes.root);
                 router.push(returnUrl);
             })
             .catch(alertService.error);
