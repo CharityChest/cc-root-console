@@ -13,8 +13,8 @@ interface EmailServerHostConfig {
         host: string;
         port: number;
         auth: {
-            user: string;
-            password: string;
+            user: string|null|undefined;
+            password: string|null|undefined;
         }
     },
     from: string;
@@ -29,14 +29,10 @@ const buildEmailServerCompleteConfig = (): EmailServerHostConfig => {
 
     emailServerHost = stripCharactersRight(emailServerHost, " /");
     emailServerPort = stripCharacters(emailServerPort, " ");
-    emailServerUser = stripCharactersRight(emailServerUser, " /");
-    emailServerPassword = stripCharactersRight(emailServerPassword, " /");
     emailServerFrom = stripCharacters(emailServerFrom, " ");
 
     if (!emailServerHost) throw new Error("EMAIL_SERVER_HOST is not defined");
     if (!emailServerPort) throw new Error("EMAIL_SERVER_PORT is not defined");
-    if (!emailServerUser) throw new Error("EMAIL_SERVER_USER is not defined");
-    if (!emailServerPassword) throw new Error("EMAIL_SERVER_PASSWORD is not defined");
     if (!emailServerFrom) throw new Error("EMAIL_SERVER_FROM is not defined");
 
     return {
