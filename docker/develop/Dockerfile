@@ -3,7 +3,8 @@ ARG ALPINE_VERSION
 
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS runner
 
-RUN apk update && apk upgrade
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash
 
 RUN mkdir /code
 
@@ -13,5 +14,5 @@ EXPOSE 3000
 
 USER node
 
-CMD ["npm", "run", "dev"]
+CMD ["./entry-point.sh", "--develop"]
 

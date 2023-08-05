@@ -37,6 +37,11 @@ RUN yarn build
 
 # Production image, copy all the files and run next
 FROM base AS runner
+
+RUN apk --no-cache update
+RUN apk --no-cache upgrade
+RUN apk add --no-cache bash
+
 WORKDIR /app
 
 ENV NODE_ENV production
@@ -45,6 +50,8 @@ ENV NODE_ENV production
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+RUN chown -R nextjs:nodejs /app
 
 COPY --from=builder /app/public ./public
 
@@ -60,4 +67,6 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME localhost
 
-CMD ["node", "server.js"]
+COPY --chown=nextjs:nodejs ./entry-point.sh ./entry-point.sh
+
+CMD ["./entry-point.sh", "--production"]

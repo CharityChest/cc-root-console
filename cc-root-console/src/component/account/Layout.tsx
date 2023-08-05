@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import { userService } from '@/service/user.service';
 import {authRoutes} from "@/route/local";
 
-export { Layout };
-
 const Layout: React.FC<{ children: React.ReactNode}> = function Layout({ children }) {
     const router = useRouter();
 
@@ -23,3 +21,5 @@ const Layout: React.FC<{ children: React.ReactNode}> = function Layout({ childre
         </div>
     );
 }
+
+export { Layout };
