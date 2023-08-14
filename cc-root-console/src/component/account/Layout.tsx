@@ -1,25 +1,29 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+'use client'
 
-import { userService } from '@/service/user.service';
+import React from 'react';
 import {authRoutes} from "@/route/local";
+import { useSession, signIn, signOut } from "next-auth/react"
 
 const Layout: React.FC<{ children: React.ReactNode}> = function Layout({ children }) {
-    const router = useRouter();
+    const { data: session } = useSession()
 
-    useEffect(() => {
-        // redirect to home if already logged in
-        if (userService.userValue) {
-            router.push(authRoutes.root);
-        }
-    }, [router]);
-
+    if(session){
+        return (
+            <>
+                Signed in as {session.user?.email} <br/>
+                <button onClick={() => signOut()}>Sign out</button>
+                <div>
+                    {children}
+                </div>
+            </>
+        )
+    }
     return (
-        <div className="col-md-6 offset-md-3 mt-5">
-            {children}
-        </div>
-    );
+        <>
+            Not signed in <br />
+            <button onClick={() => signIn()}>Sign in</button>
+        </>
+    )
 }
 
 export { Layout };

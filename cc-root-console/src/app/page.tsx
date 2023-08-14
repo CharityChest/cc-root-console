@@ -1,10 +1,26 @@
+'use client'
+
 import Image from 'next/image'
 import styles from './page.module.css'
+import { useSession, signIn, signOut } from "next-auth/react"
 
 export default function Home() {
+  const { data: session } = useSession()
   return (
     <main className={styles.main}>
       <div className={styles.description}>
+        {session ? (
+            <>
+                Signed in as {session.user?.email} <br/>
+                <button onClick={() => signOut()}>Sign out</button>
+            </>
+            ) : (
+            <>
+                Not signed in <br />
+                <button onClick={() => signIn()}>Sign in</button>
+            </>
+            )
+        }
         <p>
           Get started by editing&nbsp;
           <code className={styles.code}>src/app/page.tsx</code>

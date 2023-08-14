@@ -1,6 +1,6 @@
 import { userService } from '@/service/user.service';
 
-import { getHostConfig, HostConfig} from '@/config/host';
+import { getHostConfig, HostConfig} from '@/config/server/host';
 
 const hostConfig : HostConfig = getHostConfig();
 

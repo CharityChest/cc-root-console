@@ -8,48 +8,7 @@ interface BackendHostConfig {
     completeUrl: string;
 }
 
-interface EmailServerHostConfig {
-    server: {
-        host: string;
-        port: number;
-        auth: {
-            user: string|null|undefined;
-            password: string|null|undefined;
-        }
-    },
-    from: string;
-}
-
-const buildEmailServerCompleteConfig = (): EmailServerHostConfig => {
-    let emailServerHost = process.env.EMAIL_SERVER_HOST;
-    let emailServerPort = process.env.EMAIL_SERVER_PORT;
-    let emailServerUser = process.env.EMAIL_SERVER_USER;
-    let emailServerPassword = process.env.EMAIL_SERVER_PASSWORD;
-    let emailServerFrom = process.env.EMAIL_SERVER_FROM;
-
-    emailServerHost = stripCharactersRight(emailServerHost, " /");
-    emailServerPort = stripCharacters(emailServerPort, " ");
-    emailServerFrom = stripCharacters(emailServerFrom, " ");
-
-    if (!emailServerHost) throw new Error("EMAIL_SERVER_HOST is not defined");
-    if (!emailServerPort) throw new Error("EMAIL_SERVER_PORT is not defined");
-    if (!emailServerFrom) throw new Error("EMAIL_SERVER_FROM is not defined");
-
-    return {
-        server: {
-            host: emailServerHost,
-            port: parseInt(emailServerPort),
-            auth: {
-                user: emailServerUser,
-                password: emailServerPassword
-            }
-        },
-        from: emailServerFrom
-    }
-}
-
 export interface HostConfig {
-    email: EmailServerHostConfig;
     backend: BackendHostConfig;
 }
 
@@ -83,7 +42,6 @@ const buildBackendCompleteConfig = (): BackendHostConfig => {
 
 export const getHostConfig = (): HostConfig => {
     return {
-        email: buildEmailServerCompleteConfig(),
         backend: buildBackendCompleteConfig()
     };
 }
