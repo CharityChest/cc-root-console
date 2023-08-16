@@ -5,21 +5,11 @@ import {ifAuthorizedReturnEmail} from "@/config/server/auth";
 import {randomUnsafe} from "@/helper/string-library";
 import {sendAuthOtpEmail} from "@/modules/email";
 import {hash} from "@/helper/server/string-server-library";
-import {logDebug} from "@/log";
-import {NextApiRequest, NextApiResponse} from "next";
-import {signedCookie} from "@/library/server/cookie";
-import {authRoutes} from "@/route/local";
+import {cookie} from "@/library/server/cookie";
+import {NextRequest, NextResponse} from "next/server";
+import {getAppConfig} from "@/config/server/app";
 
-const handler = (req: NextApiRequest, res : NextApiResponse) => {
-    if (req.method === 'GET') {
-        const username = JSON.parse(
-            signedCookie(req as Request, res as Response).get("auth") ?? "{}"
-        ).username
-        if (username) {
-            res.redirect(authRoutes.welcome)
-            return
-        }
-    }
+const handler = (req: NextRequest, res : NextResponse) => {
     const credentialsProvider = CredentialsProvider({
         // The name to display on the sign in form (e.g. "Sign in with...")
         name: "Credentials",
@@ -33,24 +23,18 @@ const handler = (req: NextApiRequest, res : NextApiResponse) => {
             otp: { label: "OTP", type: "text", value: "" },
         },
         async authorize(credentials) {
-            logDebug("Auth procedure begun", credentials)
-
             const { username, password, otp } = credentials
 
             const email :string|null = ifAuthorizedReturnEmail(username, password)
-            logDebug("Email", email)
             if(email === null) {
                 return null
             }
 
             const rotp = await get(username, password, "otp")
 
-            logDebug("OTP", rotp)
-
             if(rotp === null) {
                 const randomOtp = randomUnsafe(8)
                 if(await set(username, password, "otp", randomOtp, 60 * 5)){
-                    logDebug("OTP set")
                     if(!await sendAuthOtpEmail(email, randomOtp)){
                         await del(username, password, "otp")
                     }
@@ -65,17 +49,16 @@ const handler = (req: NextApiRequest, res : NextApiResponse) => {
 
             await del(username, password, "otp")
 
-            signedCookie(req as Request, res as Response)
-                .set("auth", JSON.stringify({username}), {maxAge: 60 * 60 * 24 * 7})
+            cookie().set("auth", JSON.stringify({username}), {maxAge: 60 * 60 * 24 * 7})
 
             return  {
                 id: hash(username, password),
                 name: username,
                 email,
             }
-        }
+        },
     })
-    return NextAuth(req, res,{
+    return NextAuth( req, res,{
         providers: [
             credentialsProvider,
         ],

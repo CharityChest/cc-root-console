@@ -1,26 +1,49 @@
-import Cookies from 'cookies';
+import {cookies} from 'next/headers'
+import {hash} from "@/helper/server/string-server-library";
 import {getAppConfig} from "@/config/server/app";
 
 const secret = getAppConfig().secret
 
 interface SetOptions {
-    signed?: true;
+    signed?: boolean;
     expires?: Date;
     maxAge?: number;
+    path?: string;
+    sameSite?: boolean | 'lax' | 'strict' | 'none';
 }
 
-export const signedCookie = (req : Request, res : Response) => {
-    const cookies = new Cookies(req, res, {keys: [secret]})
+interface Cookie {
+    value: string;
+    signature?: string;
+}
+
+export const cookie = () => {
+    const cookieStore = cookies()
     return {
         get: (key: string, defaultValue: string | null = null): string | null => {
-            return cookies.get(key, { signed: true }) ?? defaultValue
+            const data = cookieStore.get(key as any)?.value
+            if (!data) {
+                return defaultValue
+            }
+            const cookie : Cookie = JSON.parse(data as string)
+            if (cookie.signature) {
+                if (cookie.signature !== hash(secret, cookie.value)) {
+                    return defaultValue
+                }
+            }
+            return cookie.value
         },
-        set: (key: string, value: string, options: SetOptions = {}): void => {
-            options.signed = true
-            cookies.set(key, value, options)
+        set: (key: string, value: string, options: SetOptions = {signed: true}): void => {
+            const data : Cookie = {
+                value
+            };
+            if (options.signed) {
+                data.signature = hash(secret, value)
+            }
+            cookieStore.set(key as any, JSON.stringify(data) as any, options as any)
         },
         del: (key: string): void => {
-            cookies.set(key, null, {signed: true})
+            cookieStore.delete(key as any)
         }
     }
 }

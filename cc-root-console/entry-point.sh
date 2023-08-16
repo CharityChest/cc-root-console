@@ -24,6 +24,7 @@ touch "$ENV_LOCAL_FILE"
   echo "REDIS_DB=${REDIS_DB}"
   echo "AUTH_ENTRIES=${AUTH_ENTRIES}"
   echo "SECRET=${SECRET}"
+  echo "NEXTAUTH_SECRET=${SECRET}"
 } >> "$ENV_LOCAL_FILE"
 
 if [ -n "$1" ]; then
